@@ -1,4 +1,6 @@
 import { NextAuthOptions } from "next-auth";
+
+
 import GithubProvider from "next-auth/providers/github";
 
 export const authOptions: NextAuthOptions = {
@@ -13,20 +15,19 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
 
-  // Add callbacks to extend session
   callbacks: {
     async session({ session, token }) {
-      // Fetch additional GitHub data and add it to the session object
+      // Attach GitHub `login` username to the session
       if (token && session.user) {
-        session.user.login = token.login;  // Attach 'login' property to session user
+        session.user.login = token.login as string;  // `login` comes from token
       }
       return session;
     },
 
     async jwt({ token, account, profile }) {
-      // Add the GitHub username (login) to the token object
-      if (account?.provider === "github") {
-        token.login = profile?.login;  // `profile.login` contains the GitHub `login` username
+      // Attach GitHub `login` (username) to the token from profile
+      if (account?.provider === "github" && profile?.login) {
+        token.login = profile.login;  // GitHub `login` is stored in the token
       }
       return token;
     },
