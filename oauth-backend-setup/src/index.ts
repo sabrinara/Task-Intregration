@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import User from './models/User';
 
 
+
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -56,8 +57,6 @@ mongoose
     }
   });
   
-
-
 
 // Test route
 app.get('/', (req: Request, res: Response) => {
