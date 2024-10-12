@@ -2,7 +2,7 @@
 
 ### TO RUN LOCALLY
 ```
-git clone repository URL
+git clone https://github.com/sabrinara/Task-Intregration.git
 ```
 ### TO INSTALL PACKAGES
 ```
