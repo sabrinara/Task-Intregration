@@ -1,7 +1,7 @@
 
 "use server";
 
-import { UserType } from "@/app/page";
+import { UserType } from "@/app/(commonlayout)/login/page";
 
 export const loginUser = async (data: UserType) => {
     // console.log("data:", data);
