@@ -1,17 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { getCardSlack } from "@/utils/actions/getCardSlack"; 
+import { getCardSlack } from "@/utils/actions/getCardSlack";
+
+
+interface SlackMessage {
+    user: string;
+    text: string;
+    ts: string;
+}
 
 const FetchSlackCards = () => {
     const [channel, setChannel] = useState<string>('');
-    const [messages, setMessages] = useState<any[]>([]); 
+    const [messages, setMessages] = useState<SlackMessage[]>([]); 
     const [loading, setLoading] = useState<boolean>(false);
 
     const fetchMessages = async () => {
         setLoading(true);
         try {
-            const response = await getCardSlack(channel);
+            const response: SlackMessage[] = await getCardSlack(channel);
             setMessages(response); 
         } catch (error) {
             console.error("Error:", error);
