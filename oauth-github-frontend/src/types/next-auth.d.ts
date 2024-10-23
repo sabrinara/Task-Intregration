@@ -3,19 +3,22 @@ import "next-auth";
 
 declare module "next-auth" {
   interface Profile {
-    login?: string;  // GitHub `login` (username) field
+    login?: string;  
   }
 
   interface Session {
     user: {
-      login?: string;  // Custom login property
+      login?: string;  
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      avatar_url?: string | null;
+      image_original?: string | null;
+      provider?: string ;
     };
   }
 
   interface JWT {
-    login?: string;  // JWT should also contain the GitHub `login`
+    login?: string;  
   }
 }

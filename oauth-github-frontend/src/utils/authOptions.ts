@@ -21,19 +21,27 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.login = token.login as string;  
+        session.user.login = token.login as string;
+        session.user.provider = token.provider as string; 
       }
       return session;
     },
+    
 
     async jwt({ token, account, profile }) {
+      if (account) {
+        token.provider = account.provider; 
+      }
+    
       if (account?.provider === "github" && profile?.login) {
-        token.login = profile.login; 
+        token.login = profile.login;
       }
+    
       if (account?.provider === "slack" && profile?.email) {
-        token.login = profile.email; // Using email for Slack
+        token.login = profile.email;
       }
+      
       return token;
-    },
+    }
   },
 };

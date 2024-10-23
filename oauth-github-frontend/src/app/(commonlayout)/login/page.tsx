@@ -6,6 +6,13 @@ import { toast } from "sonner";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+export interface UserType {
+  username: string;
+  email: string;
+  image: string;
+  githubRepo: string;
+  trelloBoard: string;
+}
 const LoginPage = () => {
   const { data: session } = useSession();
   const route = useRouter();
@@ -13,19 +20,21 @@ const LoginPage = () => {
   useEffect(() => {
     if (session && session.user?.login) {
       const userData = {
-        username: session.user.login,
+        username: session.user.login || session.user.name,
         email: session.user.email || "",
+        image: session.user.image_original || session.user.avatar_url || "",
         githubRepo: "githubRepoExample",
         trelloBoard: "trelloBoardExample",
       };
-
-      loginUser(userData)
+  
+      loginUser(userData as UserType)
         .then((userInfo) => {
           if (userInfo.access_token) {
             toast.success("Login successful!");
             localStorage.setItem("access_token", userInfo.access_token);
-            localStorage.setItem("username", userData.username);
+            localStorage.setItem("username", userData.username as string);
             localStorage.setItem("email", userData.email);
+            localStorage.setItem("provider", session.user.provider as string);
           }
         })
         .catch((error) => {
@@ -35,8 +44,10 @@ const LoginPage = () => {
       localStorage.removeItem("access_token");
       localStorage.removeItem("username");
       localStorage.removeItem("email");
+      localStorage.removeItem("provider");
     }
   }, [session]);
+  
 
   const handleRepo = () => {
     route.push("/repository");
@@ -56,21 +67,29 @@ const LoginPage = () => {
                   Disconnect
                 </button>
 
-                <button className="py-4 text-xl bg-sky-50 px-4 rounded-xl" onClick={handleRepo}>
+               {session.user?.provider === "github" && (
+                  <button className="py-4 text-xl bg-sky-50 px-4 rounded-xl" onClick={handleRepo}>
                   See All Repositories
                 </button>
-              </div>
+               )}
+               {session.user?.provider === "slack" && (
+                  <button className="py-4 text-xl bg-green-50 px-4 rounded-xl" onClick={handleRepo}>
+                  See All Boards
+                </button>
+               )}
+                           
+                </div>
             ) : (
               <div className="flex flex-col gap-4">
                 <button
                   className="py-4 text-xl bg-sky-50 px-4 rounded-xl"
-                  onClick={() => signIn("github", { callbackUrl: "https://oauth-github-frontend.vercel.app" })}
+                  onClick={() => signIn("github", { callbackUrl: "http://localhost:3000" })}
                 >
                   GitHub
                 </button>
                 <button
                   className="py-4 text-xl bg-green-50 px-4 rounded-xl"
-                  onClick={() => signIn("slack", { callbackUrl: "https://oauth-github-frontend.vercel.app/api/auth/callback/slack" })}
+                  onClick={() => signIn("slack", { callbackUrl: "https://oauth-github-frontend.vercel.app" })}
                 >
                   Slack
                 </button>
