@@ -55,7 +55,11 @@ const LoginPage = () => {
   const handleRepo = () => {
     router.push("/Repository");
   };
+  const handleSlack = () =>{
+    router.push("/slackcard")
+  }
 
+  
   return (
     <div className="my-10">
       <h1 className="text-center text-4xl mb-5">
@@ -76,8 +80,8 @@ const LoginPage = () => {
                   </button>
                 )}
                 {session.user?.provider === "slack" && (
-                  <button className="py-4 text-xl bg-green-50 px-4 rounded-xl" onClick={handleRepo}>
-                    See All Boards
+                  <button className="py-4 text-xl bg-green-50 px-4 rounded-xl" onClick={handleSlack}>
+                    Create a card
                   </button>
                 )}
                 {session.user?.provider === "atlassian" && (
