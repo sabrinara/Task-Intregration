@@ -1,9 +1,9 @@
 "use client";
 
-import { repositories } from "@/utils/actions/repositories";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation"; 
 import { toast } from "sonner";
+import { repositories } from "@/utils/actions/repositories";
 interface Repo {
   id: number;
   name: string;

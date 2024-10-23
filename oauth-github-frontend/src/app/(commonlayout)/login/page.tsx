@@ -53,7 +53,7 @@ const LoginPage = () => {
   }, [session]);
 
   const handleRepo = () => {
-    router.push("/repository");
+    router.push("/Repository");
   };
 
   return (
@@ -102,7 +102,7 @@ const LoginPage = () => {
                 </button>
                 <button
                   className="flex items-center gap-2 py-4 text-2xl bg-blue-50 px-4 rounded-xl text-blue-700"
-                  onClick={() => signIn("atlassian", { callbackUrl:`http://localhost:3000/api/auth/callback/atlassian` })}
+                  onClick={() => signIn("atlassian", { callbackUrl:`https://oauth-github-frontend.vercel.app/api/auth/callback/atlassian` })}
                 >
                   <SiJira className="text-blue-700" /> Login with Jira
                 </button>
