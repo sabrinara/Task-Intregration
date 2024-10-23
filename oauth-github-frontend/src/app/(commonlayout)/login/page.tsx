@@ -1,4 +1,7 @@
 "use client";
+import { FaGithub } from "react-icons/fa";
+import { FaSlack } from "react-icons/fa6";
+import { SiJira } from "react-icons/si";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { loginUser } from "../../../utils/actions/loginUser";
 import { toast } from "sonner";
@@ -56,7 +59,7 @@ const LoginPage = () => {
   return (
     <div className="my-10">
       <h1 className="text-center text-4xl mb-5">
-        Integrate with <span className="text-accent">GitHub</span>, <span className="text-accent">Slack</span>, or <span className="text-accent">Jira</span>
+        Integrate with <span className="text-accent">GitHub</span>, <span className="text-accent text-red-700">Slack</span>, or <span className="text-accent text-blue-700">Jira</span>
       </h1>
       <div className="gap-4 mt-10">
         <div className="w-[30%] h-[80%] mx-auto rounded-xl">
@@ -86,22 +89,22 @@ const LoginPage = () => {
             ) : (
               <div className="flex flex-col gap-4">
                 <button
-                  className="py-4 text-xl bg-sky-50 px-4 rounded-xl"
+                  className="flex items-center gap-2 py-4 text-2xl bg-sky-50 px-4 rounded-xl"
                   onClick={() => signIn("github", { callbackUrl: process.env.NEXT_PUBLIC_CALLBACK_URL })}
                 >
-                  GitHub
+                <FaGithub /> Login with GitHub 
                 </button>
                 <button
-                  className="py-4 text-xl bg-green-50 px-4 rounded-xl"
+                  className="flex items-center gap-2 py-4 text-2xl bg-green-50 text-red-700 px-4 rounded-xl"
                   onClick={() => signIn("slack", { callbackUrl: process.env.NEXT_PUBLIC_CALLBACK_URL })}
                 >
-                  Slack
+                  <FaSlack className="text-red-700" />Login with Slack
                 </button>
                 <button
-                  className="py-4 text-xl bg-orange-50 px-4 rounded-xl"
+                  className="flex items-center gap-2 py-4 text-2xl bg-blue-50 px-4 rounded-xl text-blue-700"
                   onClick={() => signIn("atlassian", { callbackUrl:`http://localhost:3000/api/auth/callback/atlassian` })}
                 >
-                  Jira
+                  <SiJira className="text-blue-700" /> Login with Jira
                 </button>
               </div>
             )}
