@@ -1,3 +1,5 @@
+// page.tsx
+
 "use client";
 import { FaGithub } from "react-icons/fa";
 import { FaSlack } from "react-icons/fa6";
@@ -5,9 +7,8 @@ import { SiJira } from "react-icons/si";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { loginUser } from "../../../utils/actions/loginUser";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getJiraInstance } from "@/utils/actions/getJiraInstance";
 
 export interface UserType {
   username: string;
@@ -20,16 +21,9 @@ export interface UserType {
 const LoginPage = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Access localStorage only on the client-side
-      const token = localStorage.getItem("access_token");
-      setAccessToken(token);
-    }
-
-    if (session && session.user?.login && accessToken) {
+    if (session && session.user?.login) {
       const userData = {
         username: session.user.login || session.user.name,
         email: session.user.email || "",
@@ -47,16 +41,12 @@ const LoginPage = () => {
             localStorage.setItem("email", userData.email);
             localStorage.setItem("provider", session.user.provider as string);
 
-            if (session.user.provider === "atlassian") {
-              getJiraInstance(userInfo.access_token)
-                .then((jiraInstance) => {
-                  localStorage.setItem("jiraInstance", jiraInstance);
-                  // router.push("/Repository");
-                })
-                .catch((error) => {
-                  console.error("Error getting Jira instance:", error);
-                  toast.error("Error getting Jira instance. Please try again.");
-                });
+            // Capture and save the selected Jira instance URL if available
+            const jiraInstanceUrl = userInfo.jira_instance_url || session.user.jira_instance_url || ""; // Adjust based on where the URL is stored
+            
+            if (jiraInstanceUrl) {
+              localStorage.setItem("jiraInstanceURL", jiraInstanceUrl);
+              console.log("Jira instance URL saved:", jiraInstanceUrl);
             }
           }
         })
@@ -69,57 +59,54 @@ const LoginPage = () => {
       localStorage.removeItem("username");
       localStorage.removeItem("email");
       localStorage.removeItem("provider");
+      localStorage.removeItem("jiraInstanceURL"); // Clear Jira URL on logout
     }
-  }, [session, accessToken]);
+  }, [session]);
 
   const handleRepo = () => {
     router.push("/Repository");
   };
+
   const handleSlack = () => {
     router.push("/slackcard");
+  };
+
+  const handleJira = () => {
+    const access_token = localStorage.getItem("access_token");
+    if (!access_token) {
+      toast.error("Access token is missing.");
+      return;
+    }
+    router.push("/jiraurl");
   };
 
   return (
     <div className="my-10">
       <h1 className="text-center text-4xl mb-5">
-        Integrate with <span className="text-accent">GitHub</span>,{" "}
-        <span className="text-accent text-red-700">Slack</span>, or{" "}
-        <span className="text-accent text-blue-700">Jira</span>
+        Integrate with <span className="text-accent">GitHub</span>, <span className="text-accent text-red-700">Slack</span>, or <span className="text-accent text-blue-700">Jira</span>
       </h1>
       <div className="gap-4 mt-10">
         <div className="w-[30%] h-[80%] mx-auto rounded-xl">
           <div className="flex justify-center mb-10 mt-2">
             {session ? (
               <div className="flex flex-col justify-center items-center gap-4">
-                <button
-                  className="py-4 text-xl bg-red-50 px-4 rounded-xl"
-                  onClick={() => signOut()}
-                >
+                <button className="py-4 text-xl bg-red-50 px-4 rounded-xl" onClick={() => signOut()}>
                   Disconnect
                 </button>
 
                 {session.user?.provider === "github" && (
-                  <button
-                    className="py-4 text-xl bg-sky-50 px-4 rounded-xl"
-                    onClick={handleRepo}
-                  >
+                  <button className="py-4 text-xl bg-sky-50 px-4 rounded-xl" onClick={handleRepo}>
                     See All Repositories
                   </button>
                 )}
                 {session.user?.provider === "slack" && (
-                  <button
-                    className="py-4 text-xl bg-green-50 px-4 rounded-xl"
-                    onClick={handleSlack}
-                  >
+                  <button className="py-4 text-xl bg-green-50 px-4 rounded-xl" onClick={handleSlack}>
                     Create a card
                   </button>
                 )}
                 {session.user?.provider === "atlassian" && (
-                  <button
-                    className="py-4 text-xl bg-orange-50 px-4 rounded-xl"
-                    onClick={handleRepo}
-                  >
-                    See All Jira Boards
+                  <button className="py-4 text-xl bg-orange-50 px-4 rounded-xl" onClick={handleJira}>
+                    Go to Jira Dashboard
                   </button>
                 )}
               </div>
@@ -135,13 +122,11 @@ const LoginPage = () => {
                   className="flex items-center gap-2 py-4 text-2xl bg-green-50 text-red-700 px-4 rounded-xl"
                   onClick={() => signIn("slack", { callbackUrl: process.env.NEXT_PUBLIC_CALLBACK_URL })}
                 >
-                  <FaSlack className="text-red-700" />Login with Slack
+                  <FaSlack className="text-red-700" /> Login with Slack
                 </button>
                 <button
                   className="flex items-center gap-2 py-4 text-2xl bg-blue-50 px-4 rounded-xl text-blue-700"
-                  onClick={() =>
-                    signIn("atlassian", { callbackUrl: `https://oauth-github-frontend.vercel.app/api/auth/callback/atlassian` })
-                  }
+                  onClick={() => signIn("atlassian", { callbackUrl: `http://localhost:3000/api/auth/callback/atlassian` })}
                 >
                   <SiJira className="text-blue-700" /> Login with Jira
                 </button>

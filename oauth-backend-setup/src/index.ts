@@ -30,32 +30,33 @@ mongoose
   });
 
 
-
   app.post('/login', async (req: Request, res: Response) => {
-    // console.log('Request body:', req.body);
-    const { username, email } = req.body;
-  
+    const { username, email, image, jira_instance_url } = req.body; // Include jira_instance_url
+    
     try {
       let user = await User.findOne({ email });
       if (!user) {
-        user = new User({ username, email });
+        user = new User({ username, email, image, jira_instance_url }); // Save the URL when creating a new user
         await user.save();  
-        // console.log('User saved:', user);
+      } else {
+        // Optionally update the existing user's Jira instance URL
+        user.jira_instance_url = jira_instance_url; // Update the user's Jira URL
+        await user.save();
       }
-  
-      const access_token = jwt.sign({ username, email }, process.env.JWT_SECRET as string, {
+    
+      const access_token = jwt.sign({ username, email, image }, process.env.JWT_SECRET as string, {
         expiresIn: process.env.EXPIRES_IN,
       });
-  
+    
       // Send the response with the token
       res.json({ access_token });
-      // console.log('Login successful');
-  
+    
     } catch (error) {
       console.error("Error during login:", error);
       res.status(500).json({ message: "Login failed" });
     }
   });
+  
   
 
 // Test route

@@ -4,6 +4,7 @@ import "next-auth";
 declare module "next-auth" {
   interface Profile {
     login?: string;  
+    instance_url?: string | null;   
   }
 
   interface Session {
@@ -15,6 +16,7 @@ declare module "next-auth" {
       avatar_url?: string | null;
       image_original?: string | null;
       provider?: string ;
+      jira_instance_url?: string | null;
     };
   }
 

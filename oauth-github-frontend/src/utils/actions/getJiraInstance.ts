@@ -1,25 +1,29 @@
 "use server";
-export const getJiraInstance = async (access_token: string) => {
-    if (!access_token) {
-      throw new Error("Access token not found");
+
+export const getJiraInstance = async () => {
+    try {
+       const res = await fetch("https://api.atlassian.com/oauth/token/accessible-resources", {
+          method: "GET",
+          headers: {
+             "Content-Type": "application/json",
+             "Authorization": `Bearer ${process.env.JIRA_API_TOKEN}`,
+          },
+       });
+ 
+       if (!res.ok) {
+          const errorDetails = await res.json();
+          throw new Error(`Failed to fetch Jira instances: ${res.status} ${res.statusText}. Details: ${JSON.stringify(errorDetails)}`);
+       }
+ 
+       const data = await res.json();
+       if (data.length > 0) {
+          return data[0].url;
+       } else {
+          throw new Error("No Jira instances found");
+       }
+    } catch (error) {
+       console.error("Error fetching Jira instance:", error);
+       throw new Error("Failed to fetch Jira instance");
     }
-  
-    const response = await fetch("https://api.atlassian.com/oauth/token/accessible-resources", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
-      },
-    });
-  
-    const data = await response.json();
-  
-    if (data && data.length > 0) {
-      const { url, id } = data[0];
-      console.log("Jira instance URL:", url, id);
-      return url; // Return the Jira instance URL
-    } else {
-      throw new Error("Unable to retrieve Jira instance URL.");
-    }
-  };
-  
+ };
+ 

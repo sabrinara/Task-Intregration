@@ -1,3 +1,5 @@
+// authOptions.ts
+
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import AtlassianProvider from "next-auth/providers/atlassian";
@@ -32,11 +34,11 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.login = token.login as string;
-        session.user.provider = token.provider as string; 
+        session.user.provider = token.provider as string;
+        session.user.jira_instance_url = token.jira_instance_url as string; // Add instance URL to session
       }
       return session;
     },
-    
 
     async jwt({ token, account, profile }) {
       if (account) {
@@ -51,8 +53,15 @@ export const authOptions: NextAuthOptions = {
         token.login = profile.email;
       }
 
-      if (account?.provider === "atlassian" && profile?.email) {
-        token.login = profile.email;
+      if (account?.provider === "atlassian") {
+        token.login = profile?.email || "";
+        // Log Atlassian profile data to inspect for instance URL
+        console.log("Atlassian Profile Data:", profile);
+
+        // Assuming the instance URL is part of the profile
+        if (profile?.instance_url) { // Adjust if necessary
+          token.jira_instance_url = profile.instance_url;
+        }
       }
       
       return token;
