@@ -35,35 +35,22 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.login = token.login as string;
         session.user.provider = token.provider as string;
-        session.user.jira_instance_url = token.jira_instance_url as string; // Add instance URL to session
+        session.user.accessToken = token.accessToken as string; // Save access token to session
       }
       return session;
     },
 
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account}) {
       if (account) {
         token.provider = account.provider; 
-      }
-    
-      if (account?.provider === "github" && profile?.login) {
-        token.login = profile.login;
-      }
-    
-      if (account?.provider === "slack" && profile?.email) {
-        token.login = profile.email;
-      }
-
-      if (account?.provider === "atlassian") {
-        token.login = profile?.email || "";
-        // Log Atlassian profile data to inspect for instance URL
-        console.log("Atlassian Profile Data:", profile);
-
-        // Assuming the instance URL is part of the profile
-        if (profile?.instance_url) { // Adjust if necessary
-          token.jira_instance_url = profile.instance_url;
+        if (account.provider === "atlassian" && account.access_token) {
+          token.accessToken = account.access_token; // Save access token
         }
+        // if (account.provider === "github" && profile) {
+        //   token.login = profile.login;
+        // }
       }
-      
+    
       return token;
     }
   },

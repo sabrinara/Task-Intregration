@@ -7,8 +7,9 @@ import { SiJira } from "react-icons/si";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { loginUser } from "../../../utils/actions/loginUser";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export interface UserType {
   username: string;
@@ -21,6 +22,39 @@ export interface UserType {
 const LoginPage = () => {
   const { data: session } = useSession();
   const router = useRouter();
+  const [jiraInstanceUrl, setJiraInstanceUrl] = useState<string | null>(null);
+
+  // Fetch Jira instance URL if authenticated with Atlassian
+  useEffect(() => {
+    if (session?.user?.provider === "atlassian" && session.user.accessToken) {
+      const fetchJiraInstanceUrl = async () => {
+        try {
+          const response = await axios.get("https://api.atlassian.com/oauth/token/accessible-resources", {
+            headers: {
+              Authorization: `Bearer ${session.user.accessToken}`,
+            },
+          });
+
+          if (response.data && response.data.length > 0) {
+
+            const instanceUrl = response.data[0].url; 
+            setJiraInstanceUrl(instanceUrl);
+            localStorage.setItem("jiraInstanceURL", instanceUrl);
+            localStorage.setItem("provider", session.user.provider as string);
+            localStorage.setItem("accessToken", session.user.accessToken as string);
+            localStorage.setItem("email", session.user.email as string);
+            
+            console.log("Jira instance URL:", jiraInstanceUrl);
+            
+          }
+        } catch (error) {
+          console.error("Error fetching Jira instance URL:", error);
+        }
+      };
+
+      fetchJiraInstanceUrl();
+    }
+  }, [session]);
 
   useEffect(() => {
     if (session && session.user?.login) {
@@ -40,27 +74,13 @@ const LoginPage = () => {
             localStorage.setItem("username", userData.username as string);
             localStorage.setItem("email", userData.email);
             localStorage.setItem("provider", session.user.provider as string);
-
-            // Capture and save the selected Jira instance URL if available
-            const jiraInstanceUrl = userInfo.jira_instance_url || session.user.jira_instance_url || ""; // Adjust based on where the URL is stored
-            
-            if (jiraInstanceUrl) {
-              localStorage.setItem("jiraInstanceURL", jiraInstanceUrl);
-              console.log("Jira instance URL saved:", jiraInstanceUrl);
-            }
           }
         })
         .catch((error) => {
           console.error("Login error:", error);
           toast.error("Login failed. Please try again.");
         });
-    } else {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("username");
-      localStorage.removeItem("email");
-      localStorage.removeItem("provider");
-      localStorage.removeItem("jiraInstanceURL"); // Clear Jira URL on logout
-    }
+    } 
   }, [session]);
 
   const handleRepo = () => {
@@ -77,9 +97,18 @@ const LoginPage = () => {
       toast.error("Access token is missing.");
       return;
     }
-    router.push("/jiraurl");
+    // router.push("/jiraurl");
   };
 
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/" });  
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("username");
+      localStorage.removeItem("email");
+      localStorage.removeItem("provider");
+      localStorage.removeItem("jiraInstanceURL");
+    
+  }
   return (
     <div className="my-10">
       <h1 className="text-center text-4xl mb-5">
@@ -90,7 +119,7 @@ const LoginPage = () => {
           <div className="flex justify-center mb-10 mt-2">
             {session ? (
               <div className="flex flex-col justify-center items-center gap-4">
-                <button className="py-4 text-xl bg-red-50 px-4 rounded-xl" onClick={() => signOut()}>
+                <button className="py-4 text-xl bg-red-50 px-4 rounded-xl" onClick={handleLogout}>
                   Disconnect
                 </button>
 

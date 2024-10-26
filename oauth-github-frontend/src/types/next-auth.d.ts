@@ -17,10 +17,12 @@ declare module "next-auth" {
       image_original?: string | null;
       provider?: string ;
       jira_instance_url?: string | null;
+      accessToken?: string | null;
     };
   }
 
   interface JWT {
     login?: string;  
+    
   }
 }
