@@ -40,15 +40,15 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
 
-    async jwt({ token, account}) {
+    async jwt({ token, account, profile }) {
       if (account) {
         token.provider = account.provider; 
         if (account.provider === "atlassian" && account.access_token) {
           token.accessToken = account.access_token; // Save access token
         }
-        // if (account.provider === "github" && profile) {
-        //   token.login = profile.login;
-        // }
+        if (account.provider === "github" && profile) {
+          token.login = profile.login;
+        }
       }
     
       return token;

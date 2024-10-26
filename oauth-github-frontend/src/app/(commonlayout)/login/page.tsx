@@ -43,7 +43,7 @@ const LoginPage = () => {
             localStorage.setItem("provider", session.user.provider as string);
             localStorage.setItem("accessToken", session.user.accessToken as string);
             localStorage.setItem("email", session.user.email as string);
-            
+
             console.log("Jira instance URL:", jiraInstanceUrl);
             
           }
@@ -102,11 +102,14 @@ const LoginPage = () => {
 
   const handleLogout = () => {
     signOut({ callbackUrl: "/" });  
+    toast.success("Logout successful!");
+      localStorage.removeItem("accessToken"); 
       localStorage.removeItem("access_token");
       localStorage.removeItem("username");
       localStorage.removeItem("email");
       localStorage.removeItem("provider");
       localStorage.removeItem("jiraInstanceURL");
+
     
   }
   return (
@@ -155,7 +158,7 @@ const LoginPage = () => {
                 </button>
                 <button
                   className="flex items-center gap-2 py-4 text-2xl bg-blue-50 px-4 rounded-xl text-blue-700"
-                  onClick={() => signIn("atlassian", { callbackUrl: `http://localhost:3000/api/auth/callback/atlassian` })}
+                  onClick={() => signIn("atlassian", { callbackUrl: process.env.NEXT_PUBLIC_CALLBACK_URL + `/api/auth/callback/atlassian` })}
                 >
                   <SiJira className="text-blue-700" /> Login with Jira
                 </button>
