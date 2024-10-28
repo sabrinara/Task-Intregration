@@ -39,11 +39,15 @@ const LoginPage = () => {
 
             const instanceUrl = response.data[0].url; 
             setJiraInstanceUrl(instanceUrl);
+            
             localStorage.setItem("jiraInstanceURL", instanceUrl);
             localStorage.setItem("provider", session.user.provider as string);
             localStorage.setItem("accessToken", session.user.accessToken as string);
             localStorage.setItem("email", session.user.email as string);
 
+            if(session.user.provider === "atlassian"){
+              toast.success("Login with Jira successfully!");
+            }
             console.log("Jira instance URL:", jiraInstanceUrl);
             
           }
@@ -69,11 +73,16 @@ const LoginPage = () => {
       loginUser(userData as UserType)
         .then((userInfo) => {
           if (userInfo.access_token) {
-            toast.success("Login successful!");
+         
             localStorage.setItem("access_token", userInfo.access_token);
             localStorage.setItem("username", userData.username as string);
             localStorage.setItem("email", userData.email);
             localStorage.setItem("provider", session.user.provider as string);
+            if(session.user.provider === "github"){
+              toast.success("Login with GitHub successfully!");
+            }else if(session.user.provider === "slack"){
+              toast.success("Login with Slack successfully!");
+            }
           }
         })
         .catch((error) => {
