@@ -106,7 +106,7 @@ const LoginPage = () => {
     //   toast.error("Access token is missing.");
     //   return;
     // }
-    router.push("/jiraurl");
+    router.push("/jiraproject");
   };
 
   const handleLogout = () => {

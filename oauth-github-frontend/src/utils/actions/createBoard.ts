@@ -7,12 +7,14 @@ export const createBoard = async (
     filterId: number,
     projectKeyOrId: number
 ) => {
+    console.log("Creating board...", domain, email, name, type, filterId, projectKeyOrId);
     const token = process.env.JIRA_TOKEN;
+    const credentials = Buffer.from(`${email}:${token}`).toString("base64");
     try {
         const res = await fetch(`${domain}/rest/agile/1.0/board`, {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `Basic ${credentials}`,
                 "Accept": "application/json",
                 "Content-Type": "application/json",
             },
@@ -21,7 +23,7 @@ export const createBoard = async (
                 type,
                 filterId,
                 location: {
-                    projectKeyOrId: projectKeyOrId.toString(),
+                    projectKeyOrId,
                     type: "project",
                 },
             }),

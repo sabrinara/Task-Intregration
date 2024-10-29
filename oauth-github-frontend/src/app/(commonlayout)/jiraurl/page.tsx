@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createBoard } from "@/utils/actions/createBoard";
 import { getAllBoard } from "@/utils/actions/getAllBoard";
+import { toast } from "sonner";
 
 interface JiraBoard {
     id: number;
@@ -51,7 +52,7 @@ const JiraUrl = () => {
         if (board) {
             setSelectedBoard(board);
             setProjectKeyOrId(board.location.projectId);
-            setFilterId(board.location.projectId || null); // Adjust this if filterId is in another location
+            setFilterId(board.location.projectId || null); 
         }
     };
 
@@ -66,6 +67,7 @@ const JiraUrl = () => {
             setCreatedBoard(board);
             setBoardName("");
             fetchAllBoards(domain, email);
+            toast.success("Board created successfully!");
         } catch (error) {
             console.error("Error creating board:", error);
         }
@@ -73,7 +75,7 @@ const JiraUrl = () => {
 
     return (
         <div className="p-4">
-            <h2 className="text-2xl mb-4">All Jira Boards</h2>
+            <h2 className="text-4xl mb-4 text-center">All Jira Projects</h2>
             <ul>
                 {allBoards.map((board) => (
                     <li key={board.id}>

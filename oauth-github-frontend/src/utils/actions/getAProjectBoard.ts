@@ -1,7 +1,9 @@
 "use server";
 
-export const getAllProject = async (domain: string, email: string) => {
-    const url = `${domain}/rest/api/3/project`;
+export const getAProjectBoard = async (domain: string, email: string , projectKey: string) => {
+    console.log( domain, email, projectKey );
+
+    const url = `${domain}/rest/agile/1.0/board/filter/${projectKey}`;
 
     const token = process.env.JIRA_TOKEN;
     const credentials = Buffer.from(`${email}:${token}`).toString("base64");
@@ -17,13 +19,13 @@ export const getAllProject = async (domain: string, email: string) => {
         });
         
         if (!res.ok) {
-            throw new Error(`Failed to fetch projects: ${res.status} ${res.statusText}`);
+            throw new Error(`Failed to fetch boards: ${res.status} ${res.statusText}`);
         }
 
         const data = await res.json();
-        return data;
+        return data.values;
     } catch (error) {
-        console.error("Error fetching projects:", error);
-        throw new Error("Failed to fetch projects");
+        console.error("Error fetching boards:", error);
+        throw new Error("Failed to fetch boards");
     }
 };
