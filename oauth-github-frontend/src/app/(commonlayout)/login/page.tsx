@@ -101,12 +101,12 @@ const LoginPage = () => {
   };
 
   const handleJira = () => {
-    const access_token = localStorage.getItem("access_token");
-    if (!access_token) {
-      toast.error("Access token is missing.");
-      return;
-    }
-    // router.push("/jiraurl");
+    // const access_token = localStorage.getItem("access_token");
+    // if (!access_token) {
+    //   toast.error("Access token is missing.");
+    //   return;
+    // }
+    router.push("/jiraurl");
   };
 
   const handleLogout = () => {

@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.login = token.login as string;
         session.user.provider = token.provider as string;
-        session.user.accessToken = token.accessToken as string; // Save access token to session
+        session.user.accessToken = token.accessToken as string; 
       }
       return session;
     },
@@ -44,7 +44,7 @@ export const authOptions: NextAuthOptions = {
       if (account) {
         token.provider = account.provider; 
         if (account.provider === "atlassian" && account.access_token) {
-          token.accessToken = account.access_token; // Save access token
+          token.accessToken = account.access_token; 
         }
         if (account.provider === "github" && profile) {
           token.login = profile.login;
