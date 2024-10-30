@@ -1,13 +1,13 @@
 "use server";
+
 export const createBoard = async (
     domain: string,
     email: string,
     name: string,
     type: string,
-    filterId: number,
-    projectKeyOrId: number
+    projectKey: string
 ) => {
-    console.log("Creating board...", domain, email, name, type, filterId, projectKeyOrId);
+    console.log("Creating board...", domain, email, name, type, projectKey);
     const token = process.env.JIRA_TOKEN;
     const credentials = Buffer.from(`${email}:${token}`).toString("base64");
     try {
@@ -21,9 +21,9 @@ export const createBoard = async (
             body: JSON.stringify({
                 name,
                 type,
-                filterId,
+                filterId : projectKey,
                 location: {
-                    projectKeyOrId,
+                    projectKeyOrId : projectKey,
                     type: "project",
                 },
             }),

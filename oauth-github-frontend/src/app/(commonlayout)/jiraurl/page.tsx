@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createBoard } from "@/utils/actions/createBoard";
+// import { createBoard } from "@/utils/actions/createBoard";
 import { getAllBoard } from "@/utils/actions/getAllBoard";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 interface JiraBoard {
     id: number;
@@ -15,15 +15,17 @@ interface JiraBoard {
 }
 
 const JiraUrl = () => {
-    const [boardName, setBoardName] = useState("");
-    const [boardType, setBoardType] = useState("scrum");
+    // const [boardName, setBoardName] = useState("");
+    // const [boardType, setBoardType] = useState("scrum");
     const [allBoards, setAllBoards] = useState<JiraBoard[]>([]);
-    const [createdBoard, setCreatedBoard] = useState<JiraBoard | null>(null);
+    // const [createdBoard, setCreatedBoard] = useState<JiraBoard | null>(null);
     const [domain, setDomain] = useState("");
     const [email, setEmail] = useState("");
-    const [filterId, setFilterId] = useState<number | null>(null);
-    const [projectKeyOrId, setProjectKeyOrId] = useState<number | null>(null);
+    // const [filterId, setFilterId] = useState<number | null>(null);
+    // const [projectKeyOrId, setProjectKeyOrId] = useState<number | null>(null);
     const [selectedBoard, setSelectedBoard] = useState<JiraBoard | null>(null);
+
+    console.log(domain,email)
 
     useEffect(() => {
         const jiraInstanceURL = localStorage.getItem("jiraInstanceURL");
@@ -51,27 +53,27 @@ const JiraUrl = () => {
         const board = allBoards.find((b) => b.id === boardId);
         if (board) {
             setSelectedBoard(board);
-            setProjectKeyOrId(board.location.projectId);
-            setFilterId(board.location.projectId || null); 
+            // setProjectKeyOrId(board.location.projectId);
+            // setFilterId(board.location.projectId || null); 
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            if (!filterId || !projectKeyOrId) {
-                console.error("Filter ID and Project Key/ID are required.");
-                return;
-            }
-            const board = await createBoard(domain, email, boardName, boardType, filterId, projectKeyOrId);
-            setCreatedBoard(board);
-            setBoardName("");
-            fetchAllBoards(domain, email);
-            toast.success("Board created successfully!");
-        } catch (error) {
-            console.error("Error creating board:", error);
-        }
-    };
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     try {
+    //         if (!filterId || !projectKeyOrId) {
+    //             console.error("Filter ID and Project Key/ID are required.");
+    //             return;
+    //         }
+    //         const board = await createBoard(domain, email, boardName, boardType, filterId, projectKeyOrId);
+    //         setCreatedBoard(board);
+    //         setBoardName("");
+    //         fetchAllBoards(domain, email);
+    //         toast.success("Board created successfully!");
+    //     } catch (error) {
+    //         console.error("Error creating board:", error);
+    //     }
+    // };
 
     return (
         <div className="p-4">
@@ -107,7 +109,7 @@ const JiraUrl = () => {
 
             {/* Form to create a new board */}
             <h2 className="text-2xl mb-4 mt-6">Create a New Jira Board</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {/* <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label className="block text-gray-700">Board Name</label>
                     <input
@@ -150,10 +152,10 @@ const JiraUrl = () => {
                     />
                 </div>
                 <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Create Board</button>
-            </form>
+            </form> */}
 
             {/* Show created board details */}
-            {createdBoard && (
+            {/* {createdBoard && (
                 <div className="mt-6 p-4 bg-gray-100 rounded">
                     <h3 className="text-xl font-bold">Created Board Details:</h3>
                     <p><strong>ID:</strong> {createdBoard.id}</p>
@@ -166,7 +168,7 @@ const JiraUrl = () => {
                         </a>
                     </p>
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

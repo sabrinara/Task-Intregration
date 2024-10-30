@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAllProject } from '@/utils/actions/getAllProject'; 
+import { getAllProject } from '@/utils/actions/getAllProject';
 import Link from "next/link";
 
 
@@ -13,7 +13,7 @@ interface Project {
     self: string;
 }
 const JiraProject = () => {
-    const [projects, setProjects] = useState([]); 
+    const [projects, setProjects] = useState([]);
     const [domain, setDomain] = useState("");
     const [email, setEmail] = useState("");
 
@@ -33,35 +33,41 @@ const JiraProject = () => {
         try {
             const projects = await getAllProject(domain, email);
             setProjects(projects);
-        
+            localStorage.removeItem("projectKey");
+            localStorage.removeItem("projectName");
             console.log("Fetched projects:", projects);
         } catch (error) {
             console.error("Error fetching projects:", error);
         }
     };
-console.log(domain, email);
-    
-const handleID = (id: number) => {
-    localStorage.setItem("projectKey", id.toString());
-};
+    console.log(domain, email);
+
+    const handleID = (id: number, name: string) => {
+        localStorage.setItem("projectName", name.toString());
+        localStorage.setItem("projectKey", id.toString());
+    };
 
     return (
         <div>
-            <h2 className="text-2xl mb-4">Jira Projects </h2>
+            <h2 className="text-4xl my-6 text-center">Jira Projects </h2>
             <ul>
-                {projects.map((project : Project) => (
-                    <li key={project.id} className="border p-4 mb-2">
-                        <div className="flex items-center">
-                       
+                {projects.map((project: Project) => (
+                    <li key={project.id} className="border p-6 mb-2">
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center">
+
+                                <div>
+                                    <h3 className="font-bold text-sky-900 text-xl">{project.name}</h3>
+                                    <p>Key: {project.key}</p>
+                                    <p>Type: {project.projectTypeKey}</p>
+                                </div>
+                            </div>
                             <div>
-                                <h3 className="font-bold">{project.name}</h3>
-                                <p>Key: {project.key}</p>
-                                <p>Type: {project.projectTypeKey}</p>
+                                <Link className="bg-sky-700 text-white px-4 py-2 rounded" href={`/jiraproject/${project.id}`}>
+                                    <button onClick={() => handleID(project.id, project.name)}>View Project</button>
+                                </Link>
                             </div>
                         </div>
-                       <Link className="text-blue-500" href={`/jiraproject/${project.id}`}>
-                       <button  onClick={() => handleID(project.id)}>View Project</button>
-                       </Link>
                     </li>
                 ))}
             </ul>
