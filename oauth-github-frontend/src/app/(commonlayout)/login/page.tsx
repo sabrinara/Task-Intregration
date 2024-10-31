@@ -96,9 +96,9 @@ const LoginPage = () => {
     router.push("/Repository");
   };
 
-  const handleSlack = () => {
-    router.push("/slackcard");
-  };
+  // const handleSlack = () => {
+  //   router.push("/slackcard");
+  // };
 
   const handleJira = () => {
     // const access_token = localStorage.getItem("access_token");
@@ -141,8 +141,8 @@ const LoginPage = () => {
                   </button>
                 )}
                 {session.user?.provider === "slack" && (
-                  <button className="py-4 text-xl bg-green-50 px-4 rounded-xl" onClick={handleSlack}>
-                    Create a card
+                  <button className="py-4 text-xl bg-green-50 px-4 rounded-xl" >
+                    <a href="https://app.slack.com/">Go to Slack for best experience</a>
                   </button>
                 )}
                 {session.user?.provider === "atlassian" && (
